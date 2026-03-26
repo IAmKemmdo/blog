@@ -46,6 +46,8 @@ class PostController extends Controller
         $post->author = $parameters['author'];
         $post->content = $parameters['content'];
 
+        // Post::create($parameters);
+
         $post->save();
 
         return redirect()->route('posts.index');
