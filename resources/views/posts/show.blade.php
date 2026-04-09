@@ -1,6 +1,17 @@
 <x-layout>
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_280px] lg:gap-8">
+        <aside class="hidden lg:block">
+            @if ($leftAd)
+                <div class="sticky top-24 rounded-2xl border border-gray-200 bg-white/80 p-3 shadow-sm">
+                    <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Reklama</p>
+                    <img src="{{ $leftAd }}" alt="Reklama po lewej"
+                        class="h-[50vh] w-full rounded-xl object-fill ring-1 ring-gray-200">
+                </div>
+            @endif
+        </aside>
+
+        <!-- Main Content -->
+        <main class="max-w-4xl w-full mx-auto">
 
         <!-- Post Header -->
         <article class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
@@ -245,6 +256,17 @@
             </div>
         </section>
 
-    </main>
+        </main>
+
+        <aside class="hidden lg:block">
+            @if ($rightAd)
+                <div class="sticky top-24 rounded-2xl border border-gray-200 bg-white/80 p-3 shadow-sm">
+                    <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Reklama</p>
+                    <img src="{{ $rightAd }}" alt="Reklama po prawej"
+                        class="h-[50vh] w-full rounded-xl object-fill ring-1 ring-gray-200">
+                </div>
+            @endif
+        </aside>
+    </div>
 
 </x-layout>

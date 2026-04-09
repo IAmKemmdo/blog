@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PostController extends Controller
 {
@@ -18,6 +19,14 @@ class PostController extends Controller
 
     public function show(string $slug)
     {
+        $selectedAds = collect(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'])
+            ->flatMap(fn (string $extension): array => File::glob(public_path("images/ads/*.{$extension}")))
+            ->unique()
+            ->map(fn (string $path): string => asset('images/ads/'.basename($path)))
+            ->shuffle()
+            ->take(2)
+            ->values();
+
         $post = Post::query()
             ->where('slug', $slug)
             ->with([
@@ -27,6 +36,8 @@ class PostController extends Controller
 
         return view('posts.show', [
             'post' => $post,
+            'leftAd' => $selectedAds->get(0),
+            'rightAd' => $selectedAds->get(1),
         ]);
     }
 
