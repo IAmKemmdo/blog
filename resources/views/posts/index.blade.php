@@ -43,7 +43,7 @@
                             @endif
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-indigo-600 cursor-pointer">
-                            <a href="{{ route('posts.show', $post->slug) }}">{{ $post->title }}</a>
+                            <a href="{{ route('posts.show', $post->slug) }}" data-loading="post">{{ $post->title }}</a>
                         </h3>
                         <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                             {{ $post->lead ?? Str::limit(strip_tags($post->content), 150) }}

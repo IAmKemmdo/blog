@@ -10,6 +10,14 @@
 </head>
 
 <body class="h-full">
+    <div id="page-loading-overlay"
+        class="pointer-events-none fixed inset-0 z-[100] hidden items-center justify-center bg-white/70 backdrop-blur-sm">
+        <div class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-lg">
+            <span class="h-5 w-5 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent"></span>
+            <span class="text-sm font-medium text-gray-700">Wczytywanie posta...</span>
+        </div>
+    </div>
+
     @include('partials.navigation')
 
     {{ $slot }}
