@@ -37,5 +37,6 @@ test('it no longer shows categories filter on posts index', function () {
         ->assertSuccessful()
         ->assertDontSeeText('Wszystkie kategorie')
         ->assertSee('name="search"', false)
-        ->assertDontSee('type="submit"', false);
+        ->assertDontSee('type="submit"', false)
+        ->assertSee('id="theme-toggle"', false);
 });

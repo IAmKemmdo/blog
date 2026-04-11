@@ -1,6 +1,17 @@
 import './bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const rootElement = document.documentElement;
+
+    if (themeToggleButton && rootElement) {
+        themeToggleButton.addEventListener('click', () => {
+            const isDark = rootElement.classList.toggle('dark');
+
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    }
+
     const loadingOverlay = document.getElementById('page-loading-overlay');
 
     if (!loadingOverlay) {
