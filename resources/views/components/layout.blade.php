@@ -8,7 +8,15 @@
 
     <script>
         (() => {
-            const savedTheme = localStorage.getItem('theme');
+            const getCookie = (name) => {
+                const cookie = document.cookie
+                    .split('; ')
+                    .find((entry) => entry.startsWith(`${name}=`));
+
+                return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+            };
+
+            const savedTheme = getCookie('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
 

@@ -1,5 +1,9 @@
 <x-layout>
-    <div id="posts-content" class="transition-[filter] duration-[3000ms] ease-out blur-md motion-reduce:transition-none">
+    @php
+        $isFirstVisit = request()->cookie('welcome_seen') !== '1';
+    @endphp
+
+    <div id="posts-content" class="{{ $isFirstVisit ? 'blur-md' : 'blur-0' }}">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="mb-8">
@@ -78,10 +82,30 @@
         </main>
     </div>
 
-    <div id="posts-welcome-overlay"
-        class="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center bg-gray-50/40 dark:bg-black/40 opacity-100 transition-opacity duration-[3000ms] ease-out motion-reduce:transition-none">
-        <p class="text-6xl md:text-7xl font-bold tracking-wide text-gray-900 dark:text-white">Witaj</p>
-    </div>
+    @if ($isFirstVisit)
+        <div id="posts-welcome-overlay" class="fixed inset-0 z-[90] flex items-center justify-center bg-gray-50/40 dark:bg-black/40">
+            <div class="text-center px-4">
+                <p class="text-6xl md:text-7xl font-bold tracking-wide text-gray-900 dark:text-white">Witaj</p>
+
+                <div id="theme-choice" class="mt-8 flex items-center justify-center gap-3">
+                    <button
+                        type="button"
+                        data-theme-choice="light"
+                        class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 hover:bg-gray-100 transition-colors"
+                    >
+                        Jasny motyw
+                    </button>
+                    <button
+                        type="button"
+                        data-theme-choice="dark"
+                        class="px-4 py-2 rounded-lg border border-gray-700 bg-gray-900 text-white hover:bg-black transition-colors"
+                    >
+                        Ciemny motyw
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -90,20 +114,43 @@
             const searchInput = document.getElementById('posts-search-input');
             const postCards = Array.from(document.querySelectorAll('[data-post-card]'));
             const noResults = document.getElementById('posts-no-results');
+            const themeChoiceButtons = Array.from(document.querySelectorAll('[data-theme-choice]'));
 
-            if (!overlay || !content) {
-                return;
+            const getCookie = (name) => {
+                const cookie = document.cookie
+                    .split('; ')
+                    .find((entry) => entry.startsWith(`${name}=`));
+
+                return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+            };
+
+            const setCookie = (name, value, days = 365) => {
+                const maxAge = days * 24 * 60 * 60;
+
+                document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; samesite=lax`;
+            };
+
+            const applyTheme = (theme) => {
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                setCookie('theme', theme);
+            };
+
+            if (overlay && content) {
+                themeChoiceButtons.forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const selectedTheme = button.dataset.themeChoice;
+
+                        if (selectedTheme === 'light' || selectedTheme === 'dark') {
+                            applyTheme(selectedTheme);
+                        }
+
+                        setCookie('welcome_seen', '1', 365);
+                        content.classList.remove('blur-md');
+                        content.classList.add('blur-0');
+                        overlay.remove();
+                    });
+                });
             }
-
-            window.requestAnimationFrame(() => {
-                overlay.classList.add('opacity-0');
-                content.classList.remove('blur-md');
-                content.classList.add('blur-0');
-            });
-
-            window.setTimeout(() => {
-                overlay.remove();
-            }, 3100);
 
             const normalizeText = (value) =>
                 value

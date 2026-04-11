@@ -4,11 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle');
     const rootElement = document.documentElement;
 
+    const setCookie = (name, value, days = 365) => {
+        const maxAge = days * 24 * 60 * 60;
+
+        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; samesite=lax`;
+    };
+
     if (themeToggleButton && rootElement) {
         themeToggleButton.addEventListener('click', () => {
             const isDark = rootElement.classList.toggle('dark');
 
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            setCookie('theme', isDark ? 'dark' : 'light');
         });
     }
 
