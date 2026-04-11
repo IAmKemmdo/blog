@@ -5,15 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\View\View;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        $posts = Post::all();
+        $search = trim((string) $request->query('search', ''));
+
+        $posts = Post::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($postQuery) use ($search) {
+                    $likeSearch = "%{$search}%";
+
+                    $postQuery
+                        ->where('title', 'like', $likeSearch)
+                        ->orWhere('lead', 'like', $likeSearch)
+                        ->orWhere('content', 'like', $likeSearch)
+                        ->orWhere('author', 'like', $likeSearch);
+                });
+            })
+            ->latest()
+            ->get();
 
         return view('posts.index', [
             'posts' => $posts,
+            'search' => $search,
         ]);
     }
 

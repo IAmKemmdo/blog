@@ -1,31 +1,32 @@
 <x-layout>
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="posts-content" class="transition-[filter] duration-[3000ms] ease-out blur-md motion-reduce:transition-none">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-gray-900">Najnowsze Posty</h2>
             <p class="mt-2 text-gray-600">Odkryj najnowsze artykuły z świata programowania</p>
         </div>
 
-        <!-- Filters/Search Bar -->
-        <div class="mb-6 flex flex-col sm:flex-row gap-4">
-            <div class="flex-1">
-                <input type="text" placeholder="Szukaj postów..."
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            </div>
-            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                <option>Wszystkie kategorie</option>
-                <option>Laravel</option>
-                <option>React</option>
-                <option>AI & Copilot</option>
-            </select>
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <input
+                id="posts-search-input"
+                type="search"
+                name="search"
+                value="{{ $search ?? '' }}"
+                placeholder="Szukaj postów..."
+                autocomplete="off"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
         </div>
 
         <!-- Posts Grid -->
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div id="posts-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
             @forelse ($posts as $post)
                 <article
+                    data-post-card
+                    data-search="{{ Str::lower($post->title.' '.$post->author.' '.($post->lead ?? '').' '.strip_tags($post->content)) }}"
                     class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
                     <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                         <span class="text-6xl">{{ $post->photo ?? '📝' }}</span>
@@ -70,7 +71,76 @@
             @endforelse
 
         </div>
-    </main>
+
+        <div id="posts-no-results" class="hidden text-center py-12">
+            <p class="text-gray-500 text-lg">Brak wyników dla podanego wyszukiwania.</p>
+        </div>
+        </main>
+    </div>
+
+    <div id="posts-welcome-overlay"
+        class="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center bg-gray-50/40 opacity-100 transition-opacity duration-[3000ms] ease-out motion-reduce:transition-none">
+        <p class="text-6xl md:text-7xl font-bold tracking-wide text-gray-900">Witaj</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('posts-welcome-overlay');
+            const content = document.getElementById('posts-content');
+            const searchInput = document.getElementById('posts-search-input');
+            const postCards = Array.from(document.querySelectorAll('[data-post-card]'));
+            const noResults = document.getElementById('posts-no-results');
+
+            if (!overlay || !content) {
+                return;
+            }
+
+            window.requestAnimationFrame(() => {
+                overlay.classList.add('opacity-0');
+                content.classList.remove('blur-md');
+                content.classList.add('blur-0');
+            });
+
+            window.setTimeout(() => {
+                overlay.remove();
+            }, 3100);
+
+            const normalizeText = (value) =>
+                value
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+
+            const filterPosts = () => {
+                if (!searchInput) {
+                    return;
+                }
+
+                const phrase = normalizeText(searchInput.value.trim());
+                let visibleCards = 0;
+
+                postCards.forEach((card) => {
+                    const searchableText = normalizeText(card.dataset.search ?? '');
+                    const isMatch = phrase === '' || searchableText.includes(phrase);
+
+                    card.classList.toggle('hidden', !isMatch);
+
+                    if (isMatch) {
+                        visibleCards += 1;
+                    }
+                });
+
+                if (noResults) {
+                    noResults.classList.toggle('hidden', visibleCards > 0 || phrase === '');
+                }
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', filterPosts);
+                filterPosts();
+            }
+        });
+    </script>
 
 
 </x-layout>

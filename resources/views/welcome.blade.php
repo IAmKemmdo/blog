@@ -20,6 +20,9 @@
         @endif
     </head>
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+        <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-[#FDFDFC] dark:bg-[#0a0a0a] opacity-100 transition-opacity duration-[2200ms] ease-out motion-reduce:transition-none">
+            <p class="text-3xl md:text-5xl font-semibold tracking-wide text-[#1b1b18] dark:text-[#EDEDEC]">Witaj na stronie glownej</p>
+        </div>
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
             @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
@@ -273,5 +276,23 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const welcomeOverlay = document.getElementById('welcome-overlay');
+
+                if (!welcomeOverlay) {
+                    return;
+                }
+
+                window.requestAnimationFrame(() => {
+                    welcomeOverlay.classList.add('opacity-0');
+                });
+
+                window.setTimeout(() => {
+                    welcomeOverlay.remove();
+                }, 2300);
+            });
+        </script>
     </body>
 </html>

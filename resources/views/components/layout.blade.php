@@ -9,7 +9,7 @@
     @vite(['resources/css/app.css'])
 </head>
 
-<body class="h-full">
+<body class="min-h-screen flex flex-col">
     <div id="page-loading-overlay"
         class="pointer-events-none fixed inset-0 z-[100] hidden items-center justify-center bg-white/70 backdrop-blur-sm">
         <div class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-lg">
@@ -20,7 +20,9 @@
 
     @include('partials.navigation')
 
-    {{ $slot }}
+    <div class="w-full flex-1">
+        {{ $slot }}
+    </div>
 
     @include('partials.footer')
 
